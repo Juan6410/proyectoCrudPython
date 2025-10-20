@@ -5,57 +5,60 @@
   </header>
 
   <!-- CRUD Productos -->
-  <div class="card">
-    <div class="card-header">
-      <h2>{{ editando ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
-    </div>
-    <div class="card-body">
-      <form class="form">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nombre del Producto</label>
-            <input 
-              type="text" 
-              [(ngModel)]="productoActual.nombre" 
-              placeholder="Ingrese el nombre"
-              class="form-control">
-          </div>
-          
-          <div class="form-group">
-            <label>Precio (USD)</label>
-            <input 
-              type="number" 
-              [(ngModel)]="productoActual.precio" 
-              step="0.01"
-              placeholder="0.00"
-              class="form-control">
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Descripción</label>
-          <textarea 
-            [(ngModel)]="productoActual.descripcion"
-            placeholder="Describa el producto"
-            class="form-control"
-            rows="3"></textarea>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" (click)="guardar()" class="btn btn-primary">
-            {{ editando ? 'Actualizar' : 'Guardar' }}
-          </button>
-          <button 
-            type="button" 
-            *ngIf="editando" 
-            (click)="cancelar()" 
-            class="btn btn-secondary">
-            Cancelar
-          </button>
-        </div>
-      </form>
-    </div>
+<div class="card">
+  <div class="card-header">
+    <h2>{{ editando ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
   </div>
+  <div class="card-body">
+    <form class="form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre del Producto</label>
+          <input 
+            type="text" 
+            [(ngModel)]="productoActual.nombre"
+            name="nombre"
+            placeholder="Ingrese el nombre"
+            class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label>Precio (USD)</label>
+          <input 
+            type="number" 
+            [(ngModel)]="productoActual.precio"
+            name="precio"
+            step="0.01"
+            placeholder="0.00"
+            class="form-control">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea 
+          [(ngModel)]="productoActual.descripcion"
+          name="descripcion"
+          placeholder="Describa el producto"
+          class="form-control"
+          rows="3"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" (click)="guardar()" class="btn btn-primary">
+          {{ editando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button 
+          type="button" 
+          *ngIf="editando" 
+          (click)="cancelar()" 
+          class="btn btn-secondary">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
   <!-- API Externa - Precios en Tiempo Real -->
   <div class="card api-card">

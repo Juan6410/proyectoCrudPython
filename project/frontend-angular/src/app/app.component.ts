@@ -57,26 +57,51 @@ export class AppComponent implements OnInit {
   }
 
   guardar() {
-    if (this.editando && this.idEditando) {
-      this.productoService.editar(this.idEditando, this.productoActual).subscribe({
-        next: () => {
-          alert('Producto actualizado exitosamente');
-          this.cargarProductos();
-          this.cancelar();
-        },
-        error: (err) => alert('Error al actualizar el producto')
-      });
-    } else {
-      this.productoService.crear(this.productoActual).subscribe({
-        next: () => {
-          alert('Producto creado exitosamente');
-          this.cargarProductos();
-          this.cancelar();
-        },
-        error: (err) => alert('Error al crear el producto')
-      });
-    }
+  // Validar que los campos no estén vacíos
+  if (!this.productoActual.nombre || !this.productoActual.nombre.trim()) {
+    alert('El nombre es obligatorio');
+    return;
   }
+  
+  if (!this.productoActual.descripcion || !this.productoActual.descripcion.trim()) {
+    alert('La descripción es obligatoria');
+    return;
+  }
+  
+  if (!this.productoActual.precio || this.productoActual.precio <= 0) {
+    alert('El precio debe ser mayor a 0');
+    return;
+  }
+
+  // Si todo está correcto, continuar
+  if (this.editando && this.idEditando) {
+    // EDITAR
+    this.productoService.editar(this.idEditando, this.productoActual).subscribe({
+      next: () => {
+        alert('Producto actualizado exitosamente');
+        this.cargarProductos();
+        this.cancelar();
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        alert('Error al actualizar el producto');
+      }
+    });
+  } else {
+    // CREAR
+    this.productoService.crear(this.productoActual).subscribe({
+      next: () => {
+        alert('Producto creado exitosamente');
+        this.cargarProductos();
+        this.cancelar();
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        alert('Error al crear el producto');
+      }
+    });
+  }
+}
 
   editar(producto: Producto) {
     this.editando = true;
