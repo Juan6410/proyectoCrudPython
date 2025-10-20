@@ -1,0 +1,61 @@
+<div class="container">
+  <h1>🛒 CRUD de Productos - Angular</h1>
+
+  <div class="formulario">
+    <h2>{{ editando ? '✏️ Editar' : '➕ Agregar' }} Producto</h2>
+    
+    <div class="form-group">
+      <label>Nombre:</label>
+      <input type="text" [(ngModel)]="productoActual.nombre" placeholder="Ej: Laptop">
+    </div>
+
+    <div class="form-group">
+      <label>Descripción:</label>
+      <textarea [(ngModel)]="productoActual.descripcion" placeholder="Ej: Laptop HP"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Precio:</label>
+      <input type="number" [(ngModel)]="productoActual.precio" step="0.01" placeholder="0.00">
+    </div>
+
+    <div class="botones">
+      <button (click)="guardar()" class="btn-primary">
+        {{ editando ? 'Actualizar' : 'Crear' }}
+      </button>
+      <button *ngIf="editando" (click)="cancelar()" class="btn-secondary">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <div class="tabla-contenedor">
+    <h2>📋 Lista de Productos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Precio</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let producto of productos">
+          <td>{{ producto.id }}</td>
+          <td>{{ producto.nombre }}</td>
+          <td>{{ producto.descripcion }}</td>
+          <td>${{ producto.precio }}</td>
+          <td>
+            <button (click)="editar(producto)" class="btn-editar">✏️</button>
+            <button (click)="eliminar(producto.id!)" class="btn-eliminar">🗑️</button>
+          </td>
+        </tr>
+        <tr *ngIf="productos.length === 0">
+          <td colspan="5" style="text-align: center;">No hay productos</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
