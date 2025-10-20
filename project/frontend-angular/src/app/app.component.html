@@ -1,61 +1,262 @@
 <div class="container">
-  <h1>🛒 CRUD de Productos - Angular</h1>
+  <header class="header">
+    <h1>Sistema de Gestión de Productos</h1>
+    <p class="subtitle">CRUD Completo con Análisis de Mercado</p>
+  </header>
 
-  <div class="formulario">
-    <h2>{{ editando ? '✏️ Editar' : '➕ Agregar' }} Producto</h2>
-    
-    <div class="form-group">
-      <label>Nombre:</label>
-      <input type="text" [(ngModel)]="productoActual.nombre" placeholder="Ej: Laptop">
+  <!-- CRUD Productos -->
+  <div class="card">
+    <div class="card-header">
+      <h2>{{ editando ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
     </div>
+    <div class="card-body">
+      <form class="form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre del Producto</label>
+            <input 
+              type="text" 
+              [(ngModel)]="productoActual.nombre" 
+              placeholder="Ingrese el nombre"
+              class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label>Precio (USD)</label>
+            <input 
+              type="number" 
+              [(ngModel)]="productoActual.precio" 
+              step="0.01"
+              placeholder="0.00"
+              class="form-control">
+          </div>
+        </div>
 
-    <div class="form-group">
-      <label>Descripción:</label>
-      <textarea [(ngModel)]="productoActual.descripcion" placeholder="Ej: Laptop HP"></textarea>
-    </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea 
+            [(ngModel)]="productoActual.descripcion"
+            placeholder="Describa el producto"
+            class="form-control"
+            rows="3"></textarea>
+        </div>
 
-    <div class="form-group">
-      <label>Precio:</label>
-      <input type="number" [(ngModel)]="productoActual.precio" step="0.01" placeholder="0.00">
-    </div>
-
-    <div class="botones">
-      <button (click)="guardar()" class="btn-primary">
-        {{ editando ? 'Actualizar' : 'Crear' }}
-      </button>
-      <button *ngIf="editando" (click)="cancelar()" class="btn-secondary">
-        Cancelar
-      </button>
+        <div class="form-actions">
+          <button type="button" (click)="guardar()" class="btn btn-primary">
+            {{ editando ? 'Actualizar' : 'Guardar' }}
+          </button>
+          <button 
+            type="button" 
+            *ngIf="editando" 
+            (click)="cancelar()" 
+            class="btn btn-secondary">
+            Cancelar
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <div class="tabla-contenedor">
-    <h2>📋 Lista de Productos</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Descripción</th>
-          <th>Precio</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let producto of productos">
-          <td>{{ producto.id }}</td>
-          <td>{{ producto.nombre }}</td>
-          <td>{{ producto.descripcion }}</td>
-          <td>${{ producto.precio }}</td>
-          <td>
-            <button (click)="editar(producto)" class="btn-editar">✏️</button>
-            <button (click)="eliminar(producto.id!)" class="btn-eliminar">🗑️</button>
-          </td>
-        </tr>
-        <tr *ngIf="productos.length === 0">
-          <td colspan="5" style="text-align: center;">No hay productos</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- API Externa - Precios en Tiempo Real -->
+  <div class="card api-card">
+    <div class="card-header">
+      <h2>Mercado de Criptomonedas - Tiempo Real</h2>
+      <button (click)="cargarCriptomonedas()" class="btn btn-info btn-sm">
+        Actualizar Precios
+      </button>
+    </div>
+    <div class="card-body">
+      <div *ngIf="cargandoCripto" class="loading">
+        Cargando datos del mercado...
+      </div>
+      
+      <div *ngIf="!cargandoCripto && criptomonedas.length > 0" class="crypto-grid">
+        <div *ngFor="let crypto of criptomonedas" class="crypto-card">
+          <div class="crypto-icon">{{ crypto.symbol.toUpperCase() }}</div>
+          <h3>{{ crypto.name }}</h3>
+          <p class="crypto-price">{{ crypto.current_price | currency:'USD':'symbol':'1.2-2' }}</p>
+          <p class="crypto-change" 
+             [class.positive]="crypto.price_change_percentage_24h > 0" 
+             [class.negative]="crypto.price_change_percentage_24h < 0">
+            {{ crypto.price_change_percentage_24h > 0 ? '+' : '' }}{{ crypto.price_change_percentage_24h | number:'1.2-2' }}%
+          </p>
+          <div class="crypto-details">
+            <div class="detail-item">
+              <span class="label">Cap. Mercado</span>
+              <span class="value">{{ crypto.market_cap | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Volumen 24h</span>
+              <span class="value">{{ crypto.total_volume | currency:'USD':'symbol':'1.0-0' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Máximo 24h</span>
+              <span class="value">{{ crypto.high_24h | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Mínimo 24h</span>
+              <span class="value">{{ crypto.low_24h | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Análisis Histórico -->
+  <div class="card analysis-card">
+    <div class="card-header">
+      <h2>Análisis Histórico de Criptomonedas</h2>
+    </div>
+    <div class="card-body">
+      <div class="analysis-controls">
+        <div class="form-group">
+          <label>Seleccione Criptomoneda</label>
+          <select [(ngModel)]="cryptoSeleccionada" class="form-control">
+            <option value="bitcoin">Bitcoin (BTC)</option>
+            <option value="ethereum">Ethereum (ETH)</option>
+            <option value="cardano">Cardano (ADA)</option>
+            <option value="solana">Solana (SOL)</option>
+            <option value="polkadot">Polkadot (DOT)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Período de Análisis</label>
+          <select [(ngModel)]="diasAnalisis" class="form-control">
+            <option [value]="1">Últimas 24 horas</option>
+            <option [value]="7">Última semana</option>
+            <option [value]="30">Último mes</option>
+            <option [value]="90">Últimos 3 meses</option>
+            <option [value]="365">Último año</option>
+          </select>
+        </div>
+
+        <button (click)="analizarCripto()" class="btn btn-primary" [disabled]="analizando">
+          {{ analizando ? 'Analizando...' : 'Realizar Análisis' }}
+        </button>
+      </div>
+
+      <div *ngIf="estadisticas" class="results-container">
+        <div class="result-header">
+          <h3>Resultados del Análisis - {{ getNombreCrypto(cryptoSeleccionada) }}</h3>
+          <span class="period-badge">{{ diasAnalisis }} días</span>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Precio Mínimo</div>
+            <div class="stat-value">{{ estadisticas.minimo | currency:'USD':'symbol':'1.2-2' }}</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Precio Máximo</div>
+            <div class="stat-value">{{ estadisticas.maximo | currency:'USD':'symbol':'1.2-2' }}</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Precio Promedio</div>
+            <div class="stat-value">{{ estadisticas.promedio | currency:'USD':'symbol':'1.2-2' }}</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Volatilidad</div>
+            <div class="stat-value">{{ estadisticas.volatilidad | number:'1.2-2' }}%</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-label">Cambio Total</div>
+            <div class="stat-value" 
+                 [class.positive]="estadisticas.cambioTotal > 0"
+                 [class.negative]="estadisticas.cambioTotal < 0">
+              {{ estadisticas.cambioTotal > 0 ? '+' : '' }}{{ estadisticas.cambioTotal | number:'1.2-2' }}%
+            </div>
+          </div>
+
+          <div class="stat-card" [ngClass]="getTendenciaClass(estadisticas.tendencia)">
+            <div class="stat-label">Tendencia</div>
+            <div class="stat-value trend">{{ estadisticas.tendencia }}</div>
+          </div>
+        </div>
+
+        <div class="insights">
+          <h4>Interpretación de Resultados</h4>
+          <div class="insight-item">
+            <strong>Rango de Precio:</strong> 
+            El precio osciló entre {{ estadisticas.minimo | currency:'USD':'symbol':'1.2-2' }} 
+            y {{ estadisticas.maximo | currency:'USD':'symbol':'1.2-2' }}, 
+            con una diferencia de {{ estadisticas.maximo - estadisticas.minimo | currency:'USD':'symbol':'1.2-2' }}.
+          </div>
+          <div class="insight-item">
+            <strong>Volatilidad:</strong> 
+            <span *ngIf="estadisticas.volatilidad > 20">
+              Alta volatilidad ({{ estadisticas.volatilidad | number:'1.2-2' }}%), lo que indica un mercado muy dinámico con grandes fluctuaciones de precio.
+            </span>
+            <span *ngIf="estadisticas.volatilidad <= 20 && estadisticas.volatilidad > 10">
+              Volatilidad moderada ({{ estadisticas.volatilidad | number:'1.2-2' }}%), típico del mercado de criptomonedas.
+            </span>
+            <span *ngIf="estadisticas.volatilidad <= 10">
+              Baja volatilidad ({{ estadisticas.volatilidad | number:'1.2-2' }}%), indicando relativa estabilidad en el precio.
+            </span>
+          </div>
+          <div class="insight-item">
+            <strong>Tendencia:</strong>
+            <span *ngIf="estadisticas.tendencia === 'ALCISTA'" class="trend-alcista">
+              Tendencia ALCISTA con un crecimiento del {{ estadisticas.cambioTotal | number:'1.2-2' }}% en el período analizado.
+            </span>
+            <span *ngIf="estadisticas.tendencia === 'BAJISTA'" class="trend-bajista">
+              Tendencia BAJISTA con una caída del {{ estadisticas.cambioTotal | number:'1.2-2' }}% en el período analizado.
+            </span>
+            <span *ngIf="estadisticas.tendencia === 'NEUTRAL'" class="trend-neutral">
+              Tendencia NEUTRAL, el precio se mantiene relativamente estable.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="analizando" class="loading">
+        Analizando datos históricos...
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de Productos -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Lista de Productos</h2>
+      <span class="badge">{{ productos.length }} registros</span>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Precio</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let producto of productos">
+              <td>{{ producto.id }}</td>
+              <td>{{ producto.nombre }}</td>
+              <td>{{ producto.descripcion }}</td>
+              <td>{{ producto.precio | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td class="actions">
+                <button (click)="editar(producto)" class="btn btn-edit">Editar</button>
+                <button (click)="eliminar(producto.id!)" class="btn btn-delete">Eliminar</button>
+              </td>
+            </tr>
+            <tr *ngIf="productos.length === 0">
+              <td colspan="5" class="empty-state">
+                No hay productos registrados. Agregue uno nuevo usando el formulario.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
